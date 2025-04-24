@@ -13,8 +13,10 @@ jobs:
         configuration:
           - name: 'standalone'
             self-contained: true
+            compress: true
           - name: 'framework-dependent'
             self-contained: false
+            compress: false
 
     steps:
     - uses: actions/checkout@v4
@@ -26,14 +28,7 @@ jobs:
 
     - name: Build and Publish
       run: |
-        dotnet publish ^
-          -c Release ^
-          -r win-x64 ^
-          --self-contained ${{ matrix.configuration.self-contained }} ^
-          -p:PublishSingleFile=true ^
-          -p:IncludeNativeLibrariesForSelfExtract=true ^
-          -p:EnableCompressionInSingleFile=true ^
-          -o publish/${{ matrix.configuration.name }}
+        dotnet publish -c Release -r win-x64 --self-contained ${{ matrix.configuration.self-contained }} -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=${{ matrix.configuration.compress }} -o publish/${{ matrix.configuration.name }}
 
     - name: Create Release Asset
       run: |
